@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/data")
 @RequiredArgsConstructor
-public class EmployeeController {
+public class MasterController {
     private final JobLauncher jobLauncher;
     private final Job job;
 
