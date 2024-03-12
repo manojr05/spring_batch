@@ -9,9 +9,9 @@ import lombok.Data;
 @Entity
 public class Product {
     @Id
-    private String productId;
+    private int productId;
     private String title;
     private String description;
-    private String price;
+    private double price;
     private String discount;
 }
