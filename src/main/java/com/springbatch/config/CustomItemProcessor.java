@@ -1,11 +1,14 @@
 package com.springbatch.config;
 
-import com.springbatch.model.Product;
+import com.springbatch.model.Employee;
 import org.springframework.batch.item.ItemProcessor;
 
-public class CustomItemProcessor implements ItemProcessor<Product, Product> {
+import java.util.Arrays;
+import java.util.List;
+
+public class CustomItemProcessor implements ItemProcessor<Employee, Employee> {
     @Override
-    public Product process(Product item) throws Exception {
-        return item;
+    public Employee process(Employee employee) {
+        return employee;
     }
 }

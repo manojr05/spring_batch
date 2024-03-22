@@ -1,8 +1,7 @@
 package com.springbatch.config;
 
-import com.springbatch.model.Product;
-import com.springbatch.repository.ProductRepository;
-import lombok.AllArgsConstructor;
+import com.springbatch.model.Employee;
+import com.springbatch.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -16,14 +15,14 @@ import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.PathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @RequiredArgsConstructor
 public class SpringBatchConfig {
 
-    private final ProductRepository productRepository;
+    private final EmployeeRepository productRepository;
 
     private final JobRepository jobRepository;
 
@@ -42,7 +41,7 @@ public class SpringBatchConfig {
     @Bean
     public Step steps(){
         return new StepBuilder("step", jobRepository)
-                .<Product, Product>chunk(10, transactionManager)
+                .<Employee, Employee>chunk(10, transactionManager)
                 .reader(reader())
                 .processor(itemProcesser())
                 .writer(itemWriter())
@@ -50,28 +49,27 @@ public class SpringBatchConfig {
     }
 
     @Bean
-    public FlatFileItemReader<Product> reader(){
-        return new FlatFileItemReaderBuilder<Product>()
+    public FlatFileItemReader<Employee> reader(){
+        return new FlatFileItemReaderBuilder<Employee>()
                 .name("item_reader")
-                .resource(new FileSystemResource(fileInput))
+                .resource(new PathResource(fileInput))
                 .linesToSkip(1)
                 .delimited()
-                .names("productId", "title", "description", "price", "discount")
-                .targetType(Product.class)
+                .names("id", "name", "age", "gender", "salary")
+                .targetType(Employee.class)
                 .build();
     }
 
     @Bean
-    public ItemProcessor<Product, Product> itemProcesser(){
+    public ItemProcessor<Employee, Employee> itemProcesser(){
         return new CustomItemProcessor();
     }
 
     @Bean
-    public RepositoryItemWriter<Product> itemWriter(){
-        RepositoryItemWriter<Product> writer = new RepositoryItemWriter<>();
+    public RepositoryItemWriter<Employee> itemWriter(){
+        RepositoryItemWriter<Employee> writer = new RepositoryItemWriter<>();
         writer.setRepository(productRepository);
         writer.setMethodName("save");
         return writer;
     }
-
 }
