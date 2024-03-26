@@ -38,10 +38,8 @@ public class IntegrationConfig {
     @Value("${watcher.directory}")
     String watcherDirectory;
 
-    private Set<String> processedFiles = new HashSet<>();
-
     @Bean
-    @InboundChannelAdapter(value = "fileInputChannel", poller = @Poller(fixedDelay = "5000"))
+    @InboundChannelAdapter(value = "fileInputChannel", poller = @Poller(fixedDelay = "2000"))
     public FileReadingMessageSource fileReadingMessageSource() {
         CompositeFileListFilter<File> filter = new CompositeFileListFilter<>();
         filter.addFilters(new SimplePatternFileListFilter("*.csv"));
@@ -57,10 +55,7 @@ public class IntegrationConfig {
     @ServiceActivator(inputChannel = "fileInputChannel")
     public void handleFileWrite(File file) throws Exception {
         String fileName = file.getName();
-        if (!processedFiles.contains(fileName)) {
-            processedFiles.add(fileName);
             launchBatchJob(fileName);
-        }
     }
 
     private void launchBatchJob(String fileName) throws Exception {
@@ -68,7 +63,6 @@ public class IntegrationConfig {
                 .addLong("startAt", System.currentTimeMillis())
                 .addString("filePath", watcherDirectory+fileName)
                 .toJobParameters();
-
         jobLauncher.run(fileProcessingJob, jobParameters);
     }
 }
